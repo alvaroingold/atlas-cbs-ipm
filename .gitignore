@@ -71,3 +71,4 @@ RemoteSystemsTempFiles
 # PDT-specific
 .buildpath
 web.xml
+MySQL
