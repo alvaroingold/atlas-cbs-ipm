@@ -1,0 +1,16 @@
+<html>
+<body onLoad="dopost()">
+<form name="postingForm" action="generate_image.jsp" method="POST">
+Posting a SMILES string
+<input type="hidden" name="mol" value="CN1C=NC2=C1C(=O)N(C)C(=O)N2C">
+<input type="hidden" name="format" value="jpeg:w200,h200,#ffffff">
+</form>
+</body>
+<script language="javascript">
+<!--
+function dopost() {
+	window.setTimeout('document.postingForm.submit()',1);
+}
+//-->
+</script>
+</html>

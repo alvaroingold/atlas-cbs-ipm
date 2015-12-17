@@ -1,0 +1,135 @@
+import java.io.*;
+import java.util.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+import java.sql.*;
+import org.json.*;
+
+
+public class LEIgetData extends HttpServlet {
+
+
+    ResourceBundle rb = ResourceBundle.getBundle("LocalStrings");
+    
+
+   protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+    throws ServletException, IOException {
+        response.setContentType("text/html");
+
+        PrintWriter salida = response.getWriter();
+
+        ServletContext servletContext = getServletContext();
+        String user = servletContext.getInitParameter("user").trim();
+        String pass = servletContext.getInitParameter("password").trim();
+        String dbname = servletContext.getInitParameter("dbname").trim();
+        String dbhost = servletContext.getInitParameter("dbhost").trim();
+
+        String param = request.getParameter("target");
+        String param2 = request.getParameter("organism");
+	String param3 = request.getParameter("type");
+        String param4 = request.getParameter("x");
+        String param5 = request.getParameter("y");
+        String param_request = request.getParameter("json");
+
+
+
+                try {
+			String DRIVER = "org.gjt.mm.mysql.Driver";
+			Class.forName(DRIVER).newInstance();
+                        java.sql.Connection conn;
+                        String conn_URL = "jdbc:mysql://"+dbhost+"/"+dbname+"?user="+user+"&password="+pass;
+                        conn = DriverManager.getConnection(conn_URL);
+
+			ResultSet rs=null;
+			ResultSet rs2=null;
+			PreparedStatement stmt=null;
+			PreparedStatement stmt2=null;
+
+		if( param_request != null){
+
+			JSONObject result = new JSONObject();
+			JSONArray array = new JSONArray();
+
+                        if( param != null){
+                                if( param2 != null){
+					if( param3 != null && param4 != null){
+
+                                        stmt=conn.prepareStatement("select MOLECULE.NAME,MOLECULE.SMILES, LEI.VALUE  FROM MOLECULE,TARGORG,PHARMACOLOGY,LEI WHERE PHARMACOLOGY.ID_COMBINATION = TARGORG.ID_COMBINATION AND TARGORG.ID_TARGET = ? AND TARGORG.ID_ORGANISM = ? AND PHARMACOLOGY.ID_MOLECULE = MOLECULE.ID_MOLECULE AND PHARMACOLOGY.ID_TYPE = ? AND LEI.ID_TYPE = ? AND PHARMACOLOGY.ID_PHARMACOLOGY = LEI.ID_PHARMACOLOGY");	
+                                        stmt.setString(1, param);
+                                        stmt.setString(2, param2);
+                                        stmt.setString(3, param3);
+                    			stmt.setString(4, param4);
+
+					stmt2=conn.prepareStatement("select MOLECULE.NAME,MOLECULE.SMILES, LEI.VALUE  FROM MOLECULE,TARGORG,PHARMACOLOGY,LEI WHERE PHARMACOLOGY.ID_COMBINATION = TARGORG.ID_COMBINATION AND TARGORG.ID_TARGET = ? AND TARGORG.ID_ORGANISM = ? AND PHARMACOLOGY.ID_MOLECULE = MOLECULE.ID_MOLECULE AND PHARMACOLOGY.ID_TYPE = ? AND LEI.ID_TYPE = ? AND PHARMACOLOGY.ID_PHARMACOLOGY = LEI.ID_PHARMACOLOGY");	
+                                        stmt2.setString(1, param);
+                                        stmt2.setString(2, param2);
+                                        stmt2.setString(3, param3);
+                    			stmt2.setString(4, param5);
+					
+                       rs=stmt.executeQuery();
+                        rs2=stmt2.executeQuery();
+                        int total = 0;
+
+                        while (rs.next()) {
+                        rs2.next();
+                        JSONArray ja= new JSONArray();
+
+                                        ja.put(rs.getFloat(3));
+                                        ja.put(rs2.getFloat(3));
+                                        ja.put(rs.getString(1));
+                                        ja.put(rs.getString(2));
+                                        ja.put("");
+
+                        ++total;
+                        array.put(ja);
+
+                        }
+
+                response.setContentType("application/json");
+                response.setHeader("Cache-Control", "no-store");
+                salida.print("[" +array + ",[[2.0,3.0],[4.0,6.0]]  ]");
+
+
+					}
+				}
+                        }else{
+                response.setContentType("application/json");
+                response.setHeader("Cache-Control", "no-store");
+                salida.print("[[[]]]");
+
+			}
+                        
+
+
+		}
+
+		salida.close();
+
+                }catch (SQLException E) {
+			salida.println("ERROR. 2434632.\n");
+			E.printStackTrace();
+                }catch( ClassNotFoundException E) {
+                        salida.println("ERROR. NoMySQL.\n");
+		}catch( Exception E) {
+                        salida.println("ERROR. What?.\n");
+		}
+
+        salida.close();
+    }
+
+
+    public void doGet(HttpServletRequest request,
+                      HttpServletResponse response)
+        throws IOException, ServletException
+    {
+        processRequest(request, response);
+    }
+
+    public void doPost(HttpServletRequest request,
+                      HttpServletResponse response)
+        throws IOException, ServletException
+    {
+        doGet(request, response);
+    }
+
+}

@@ -1,0 +1,111 @@
+<html>
+<head>
+<title>MarvinSketch Ajax example 1</title>
+<script language="javascript" type="text/javascript">
+/* Create a new XMLHttpRequest object to talk to the Web server */
+var xmlHttp = false;
+/*@cc_on @*/
+/*@if (@_jscript_version >= 5)
+try {
+  xmlHttp = new ActiveXObject("Msxml2.XMLHTTP");
+} catch (e) {
+  try {
+    xmlHttp = new ActiveXObject("Microsoft.XMLHTTP");
+  } catch (e2) {
+    xmlHttp = false;
+  }
+}
+@end @*/
+
+if (!xmlHttp && typeof XMLHttpRequest != 'undefined') {
+  xmlHttp = new XMLHttpRequest();
+}
+
+var format = "png";
+
+function callServer() {
+  var s = getMol(getFormat());
+  if(s == "") {
+      return;
+  } 
+  var parameters = "format="+format+"&mol="+s;
+  var url = "createsaveimage.jsp";
+
+  // Open a connection to the server
+  xmlHttp.open("POST", url, true);
+  xmlHttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+  xmlHttp.setRequestHeader("Content-length", parameters.length);
+  xmlHttp.setRequestHeader("Connection", "close");
+
+  // Setup a function for the server to run when it's done
+  xmlHttp.onreadystatechange = updatePage;
+
+  document.getElementById("resultdiv").innerHTML = "Waiting for the response";
+  // Send the request
+  xmlHttp.send(parameters);
+}
+
+function updatePage() {
+  if (xmlHttp.readyState == 4) {
+    var response = xmlHttp.responseText;
+    response = '<img src="'+response+'" alt="'+response+'" width=200 height=200 />';
+    document.getElementById("resultdiv").innerHTML = response;
+  }
+}
+
+</script>
+</head>
+
+<body>
+<h1>MarvinSketch Ajax example 1</h1>
+<p>The image of the drawn structure displays beside the MarvinSketch applet 
+by pressing the <strong>Get&nbsp;Image</strong> button.<br>
+By submitting of the button, the molecule is retrieved in the selected format from the applet and posted to the server.
+On the server side, a JSP 
+(<a href="createsaveimage.jsp.txt">createsaveimage.jsp</a>) converts the 
+molecule into image and saves it. The URL
+of the image file is sent back to the browser that displays it.</p>
+<form name="molform">
+<input type="hidden" name="format" id="format" value="png" />
+<input type="hidden" name="mol" id="mol" />
+<input type="button" name="sendmol" value="Get Image" onClick="callServer();"/>
+Molecule format:
+<select name="molformat">
+<option selected value="mrv">mrv</option>
+<option value="mol">mol</option>
+<option value="smiles">mrv</option>
+</select>
+</form>
+<table>
+<tr><td>
+<script language="javascript" src="/marvin/marvin.js"></script>
+<script language="javascript" style="text/javascript">
+<!--
+msketch_name="JMSketch"
+msketch_begin("/marvin",400,380);
+msketch_end();
+
+function getFormat() {
+    var sel = document.molform.molformat;
+    var v = sel[sel.selectedIndex].value;
+    return v;
+}
+
+function getMol(moltype) {
+    if(document.JMSketch != null) {
+        var molstr = document.JMSketch.getMol(moltype);
+        document.molform.mol.value = molstr;
+        return molstr;
+    }
+    return "";
+}
+-->
+</script>
+</td>
+<td>
+<div id="resultdiv"></div>
+</td></tr>
+</table>
+</body>
+</html>
+
