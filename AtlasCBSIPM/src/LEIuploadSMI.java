@@ -183,7 +183,11 @@ public class LEIuploadSMI extends HttpServlet {
 
 		        nhea = ac.getAtomCount();
 
-		        SMARTSQueryTool querytool = new SMARTSQueryTool("[#7,#8]");
+		        
+		        //Issue #1
+		        //Can also be fixed using:
+		        //SMARTSQueryTool querytool = new SMARTSQueryTool("[#7,#8]");
+		        SMARTSQueryTool querytool = new SMARTSQueryTool("[N,n,O,o]");
 		        boolean status = querytool.matches(ac);
 		        if (status) { npol = querytool.countMatches(); }
 

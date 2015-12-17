@@ -154,9 +154,9 @@ public class LEIaddCompound extends HttpServlet {
         result = retval.getValue();
         psa = Double.parseDouble(result.toString());
 
-	nhea = ac.getAtomCount();
+        nhea = ac.getAtomCount();
 
-        SMARTSQueryTool querytool = new SMARTSQueryTool("[O,N]");
+		SMARTSQueryTool querytool = new SMARTSQueryTool("[N,n,O,o]");
         boolean status = querytool.matches(ac);
         if (status) { npol = querytool.countMatches(); }
 

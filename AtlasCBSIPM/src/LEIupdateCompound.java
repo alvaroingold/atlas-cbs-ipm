@@ -211,7 +211,7 @@ public class LEIupdateCompound extends HttpServlet {
 
 	        nhea = ac.getAtomCount();
 
-	        SMARTSQueryTool querytool = new SMARTSQueryTool("[O,N]");
+	        SMARTSQueryTool querytool = new SMARTSQueryTool("[N,n,O,o]");
 	        boolean status = querytool.matches(ac);
 	        if (status) { npol = querytool.countMatches(); }
 
@@ -342,7 +342,7 @@ public class LEIupdateCompound extends HttpServlet {
 
         nhea = ac.getAtomCount();
 
-        SMARTSQueryTool querytool = new SMARTSQueryTool("[O,N]");
+        SMARTSQueryTool querytool = new SMARTSQueryTool("[N,n,O,o]");
         boolean status = querytool.matches(ac);
         if (status) { npol = querytool.countMatches(); }
 
