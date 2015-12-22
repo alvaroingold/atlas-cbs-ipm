@@ -132,8 +132,8 @@ function Populate_molinformation(){
       }
 
        var responselist = texto2.split(";");
-       var polar = responselist[1];
-       var mass = responselist[0];
+       var polar = responselist[0];
+       var mass = responselist[1];
        var natoms = responselist[2];
        var heavy = responselist[3];
        var psa = responselist[4];
