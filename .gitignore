@@ -72,3 +72,5 @@ RemoteSystemsTempFiles
 .buildpath
 web.xml
 MySQL
+NPOLCounter
+TestUploadCSV
